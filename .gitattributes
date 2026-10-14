@@ -2,3 +2,5 @@
 docs/** linguist-generated=true
 # Bundled Three.js GLSL strings retain their upstream whitespace.
 docs/assets/*.js whitespace=-blank-at-eol
+index.html linguist-generated=true whitespace=-blank-at-eol
+docs/index.html whitespace=-blank-at-eol

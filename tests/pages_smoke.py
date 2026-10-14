@@ -56,8 +56,11 @@ def main():
             page.locator("#menu-view").wait_for(state="visible")
             wait("document.querySelector('canvas').width > 0")
             assert page.evaluate("typeof window.apexDebug") == "undefined", "Production exposes development API"
-            assert page.locator('script[type="module"]').get_attribute("src").startswith("./assets/")
-            assert page.locator('link[rel="stylesheet"]').get_attribute("href").startswith("./assets/")
+            assert page.locator("script[src], link[rel=stylesheet]").count() == 0, "Standalone page needs external JS/CSS"
+            assert page.locator('script[type="module"]').count() == 0, "Standalone bundle must be a classic script"
+            assert page.locator("style").count() > 0, "Standalone CSS is missing"
+            assert page.locator("script:not([src])").count() > 0, "Standalone JavaScript is missing"
+            assert page.locator("#play-button").evaluate("el => getComputedStyle(el).backgroundColor") != "rgba(0, 0, 0, 0)"
 
             page.locator("#menu-controls").click()
             page.locator("#pause-view").wait_for(state="visible")
@@ -103,16 +106,16 @@ def main():
             page.locator("#menu-view").wait_for(state="visible")
             print("PASS production ball camera, pause/resume and return to menu", flush=True)
 
-            scripts = [u for u in requests if urlparse(u).path.endswith(".js")]
-            styles = [u for u in requests if urlparse(u).path.endswith(".css")]
-            assert scripts and styles, "No built JavaScript/CSS requested"
-            for resource in scripts + styles:
+            for resource in requests:
                 parsed = urlparse(resource)
+                if parsed.scheme not in ("http", "https"):
+                    continue
                 assert parsed.netloc == destination.netloc, f"External runtime dependency: {resource}"
                 assert parsed.path.startswith(prefix), f"Resource escaped Pages subpath: {resource}"
+                assert resource == page.url, f"Standalone game requested another file: {resource}"
             assert not errors, f"Browser errors: {errors}"
             assert not failed_resources, f"Resource failures: {failed_resources}"
-            print(f"PASS bundled JS/CSS under {prefix}; no development API, browser errors or missing resources", flush=True)
+            print(f"PASS autonomous HTML under {prefix}; inline CSS/classic JS, no development API or other network resource", flush=True)
         except Exception:
             print("FAIL browser errors:", errors, flush=True)
             print("FAIL resources:", failed_resources, flush=True)
