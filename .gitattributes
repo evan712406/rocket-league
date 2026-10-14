@@ -1,0 +1,4 @@
+# Generated distribution; source reviews belong in src/.
+docs/** linguist-generated=true
+# Bundled Three.js GLSL strings retain their upstream whitespace.
+docs/assets/*.js whitespace=-blank-at-eol

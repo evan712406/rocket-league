@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#070d15" />
+    <meta name="description" content="APEX DRIVE : du football, des voitures et du boost. Un jeu 3D original à jouer dans votre navigateur." />
+    <title>APEX DRIVE — Football à pleine vitesse</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23080f18'/%3E%3Cpath d='M10 47 29 14h7l18 33H41L32 30l-9 17z' fill='%2324d5ed'/%3E%3Cpath d='M28 43h12l-5 9H23z' fill='%23ff9a44'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <canvas id="game-canvas" aria-label="Arène de football automobile en trois dimensions"></canvas>
+    <div id="ui-root">
+      <div class="menu-scene-shade" id="menu-shade"></div>
+      <header class="app-header" id="app-header">
+        <a class="brand" href="#" aria-label="APEX DRIVE, menu principal" id="brand-home">
+          <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M2 34 19 5h6l17 29H30l-8-15-8 15z" fill="currentColor"/><path d="M18 30h11l-5 9H13z" fill="#ff9c47"/></svg>
+          <span>APEX<span class="brand-divider">/</span>DRIVE</span>
+        </a>
+        <div class="header-right"><span class="header-label"><i></i> ARÈNE 01 <span class="header-separator">/</span> NEXUS</span><button class="icon-button" id="sound-toggle" aria-label="Désactiver le son" title="Son"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m11 4-5 4H3v8h3l5 4V4Z"/><path class="sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg></button></div>
+      </header>
+
+      <main class="menu-view" id="menu-view">
+        <div class="menu-main">
+          <p class="eyebrow"><span class="small-line"></span> FOOTBALL AUTOMOBILE</p>
+          <h1>DU FOOTBALL.<br /><span>PLEIN GAZ.</span></h1>
+          <p class="menu-description">Prenez de la vitesse. Défiez la gravité.<br />Chaque impact change le match.</p>
+          <div class="play-configuration">
+            <div class="section-caption"><span>CHOISISSEZ VOTRE MATCH</span><span>01 — 03</span></div>
+            <div class="mode-picker" role="group" aria-label="Mode de jeu">
+              <button class="mode-option selected" data-mode="duel" aria-pressed="true"><span class="mode-number">1<span>v</span>1</span><span class="mode-name">DUEL</span></button>
+              <button class="mode-option" data-mode="doubles" aria-pressed="false"><span class="mode-number">2<span>v</span>2</span><span class="mode-name">ÉQUIPE</span></button>
+              <button class="mode-option" data-mode="training" aria-pressed="false"><span class="mode-number"><svg viewBox="0 0 36 20" aria-hidden="true"><path d="M18 10c-5-12-16-10-16 0s11 12 16 0c5-12 16-10 16 0S23 22 18 10Z" fill="none" stroke="currentColor" stroke-width="2"/></svg></span><span class="mode-name">LIBRE</span></button>
+            </div>
+            <div class="difficulty-row" id="difficulty-row"><span>ADVERSAIRE</span><div class="difficulty-picker" role="group" aria-label="Difficulté"><button data-difficulty="easy" aria-pressed="false">FACILE</button><button class="selected" data-difficulty="normal" aria-pressed="true">NORMAL</button><button data-difficulty="hard" aria-pressed="false">EXPERT</button></div></div>
+            <button class="play-button" id="play-button"><span>JOUER</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+            <div class="match-details" id="match-details"><span><i></i> VOUS CONTRE L’IA</span><span>5 MINUTES</span></div>
+          </div>
+        </div>
+        <div class="arena-caption"><span class="arena-cross">+</span><div><span class="arena-caption-number">01 / NEXUS</span><span class="arena-caption-name">L’ARÈNE VOUS ATTEND.</span></div><span class="arena-caption-line"></span></div>
+      </main>
+
+      <footer class="menu-footer" id="menu-footer">
+        <div class="menu-keys"><div class="key-tip"><span class="key-cluster"><kbd data-binding="forward">Z</kbd><kbd data-binding="left">Q</kbd><kbd data-binding="backward">S</kbd><kbd data-binding="right">D</kbd></span><span>CONDUIRE</span></div><div class="key-tip"><kbd class="wide-key" data-binding="jump">ESPACE</kbd><span>SAUT / FLIP</span></div><div class="key-tip"><kbd class="wide-key" data-binding="boost">SHIFT</kbd><span>BOOST</span></div><div class="key-tip"><kbd data-binding="ballCam">C</kbd><span>CAMÉRA BALLON</span></div></div>
+        <button class="text-button" id="menu-controls">TOUTES LES COMMANDES <span>↗</span></button>
+      </footer>
+
+      <section class="hud hidden" id="hud" aria-label="Informations du match">
+        <div class="hud-top"><div class="team-blue"><span class="team-name">AZUR</span><span class="score" id="score-blue">0</span></div><div class="hud-time"><span id="hud-mode">DUEL · 1V1</span><strong id="timer">5:00</strong><span id="overtime-label" class="hidden">PROLONGATION</span></div><div class="team-orange"><span class="score" id="score-orange">0</span><span class="team-name">BRAISE</span></div></div>
+        <button id="pause-button" class="pause-button" aria-label="Mettre en pause"><span>Ⅱ</span><kbd data-binding="pause">ÉCHAP</kbd></button>
+        <div class="speed-panel"><div class="speed-value"><strong id="speed">0</strong><span>KM/H</span></div><div class="speed-line"><span id="speed-bar"></span></div><span class="speed-label">VITESSE</span></div>
+        <div class="boost-panel"><div class="boost-meter" id="boost-meter"><div class="boost-center"><strong id="boost">100</strong><span>BOOST</span></div></div><span class="boost-hint"><kbd data-binding="boost">SHIFT</kbd> À FOND</span></div>
+        <div class="hud-bottom"><button class="ballcam-button" id="ballcam-toggle"><kbd data-binding="ballCam">C</kbd><span>CAMÉRA BALLON</span><i id="ballcam-indicator"></i></button><span class="hud-controls"><em data-binding="jump">ESPACE</em> <span>SAUT</span><b>·</b> <em data-binding="slide">CTRL</em> <span>DÉRAPAGE</span><b>·</b> <em data-binding="airRollLeft">A</em> / <em data-binding="airRollRight">E</em> <span>ROTATION</span></span></div>
+      </section>
+
+      <div class="countdown-overlay hidden" id="countdown" aria-live="polite"><strong id="countdown-text">3</strong><span>PRÊT À FAIRE LA DIFFÉRENCE ?</span></div>
+      <div class="goal-overlay hidden" id="goal-overlay" aria-live="polite"><span id="goal-team">AZUR MARQUE</span><strong>BUT !</strong><span id="goal-scorer"></span></div>
+      <div class="notice hidden" id="notice" role="status"></div>
+
+      <section class="modal-backdrop hidden" id="pause-view" aria-label="Menu pause">
+        <div class="pause-card modal-card"><div class="modal-heading"><div><p class="eyebrow">TEMPS MORT</p><h2 id="pause-title">Pause.</h2></div><button class="close-button" id="close-pause" aria-label="Fermer">×</button></div>
+          <div class="pause-actions" id="pause-actions"><button class="solid-button" id="resume-button">REPRENDRE <span>↗</span></button><button class="secondary-button" id="restart-button">RECOMMENCER</button><button class="secondary-button" id="back-menu-button">MENU</button></div>
+          <div class="settings-line"><label for="quality-select">QUALITÉ VISUELLE</label><select id="quality-select"><option value="high">Élevée</option><option value="medium" selected>Équilibrée</option><option value="low">Performance</option></select></div>
+          <div class="settings-line"><label for="settings-sound">AUDIO</label><button class="setting-toggle" id="settings-sound" role="switch" aria-checked="true"><span></span><b>ACTIVÉ</b></button></div>
+          <div class="controls-heading"><span>COMMANDES</span><span>CLIQUEZ POUR MODIFIER</span></div><div class="bindings-grid" id="bindings-grid"></div>
+          <p class="controls-note">Cliquez dans l’arène pour capturer la souris et orienter la caméra. En l’air : conduite pour le tangage et le lacet, A/E pour le roulis. Saut + direction : flip.</p>
+        </div>
+      </section>
+
+      <section class="modal-backdrop hidden" id="finished-view" aria-label="Résultat du match">
+        <div class="finish-card modal-card"><p class="eyebrow">COUP DE SIFFLET FINAL</p><h2 id="finish-title">VICTOIRE.</h2><p id="finish-message">Le terrain est à vous.</p><div class="finish-scores"><div><span>AZUR</span><strong id="finish-blue">0</strong></div><b>—</b><div><span>BRAISE</span><strong id="finish-orange">0</strong></div></div><button class="solid-button" id="finish-restart">REJOUER <span>↗</span></button><button class="text-button" id="finish-menu">RETOUR AU MENU</button></div>
+      </section>
+      <div class="desktop-note">Pour jouer : un ordinateur, un clavier et un peu d’audace.</div>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
